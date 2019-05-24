@@ -1,0 +1,14 @@
+.ninja_*
+/out/
+.zscfzFiles/
+zsconfuz_*.sh
+
+/examples/01/ac_import
+/examples/01/tent.sh
+/examples/ca*grind.out*
+/examples/*.ninja
+/examples/.ninja_*
+/examples/tatx.sh
+/examples/.zscfzFiles
+/examples/zsconfuz_*.sh
+/examples/zsconfuz.strace*

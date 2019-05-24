@@ -1,0 +1,2 @@
+: ""
+echo -e "\001echo hi"

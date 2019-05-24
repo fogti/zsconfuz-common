@@ -1,0 +1,35 @@
+#!/bin/bash
+
+. tent.sh || { echo "tent.sh not found"; exit 1; }
+
+printf "checking for $1 compiler version ... "
+is_dn=false
+for i in --version -v -V -qversion; do
+  temp="$("${!2}" "$i" 2>/dev/null | head -n 1)"
+  if [ -n "$temp" ]; then
+    echo "$temp"
+    printf "\000compiler_${2}_vers=\"$temp\"\n"
+    is_dn=true
+    break
+  fi
+done
+$is_dn || echo "(none)"
+
+printf "checking whether the $1 compiler works ... "
+mkdir -p ".zscfzFiles"
+tmpf=".zscfzFiles/compiler_ctst_$1.c"
+cat > "$tmpf" <<EOF
+int main() {}
+EOF
+
+"${!2}" -o ".zscfzFiles/compiler_ctst_$1.x" "$tmpf" &>/dev/null
+if [ $? -eq 0 ]; then
+  echo "yes"
+  printf "\000compiler_${2}_works=1\n"
+else
+  echo "no"
+  printf "\000compiler_${2}_works=0\n"
+fi
+
+rm -f ".zscfzFiles/compiler_ctst_$1."*
+exit 0

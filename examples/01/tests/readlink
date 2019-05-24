@@ -1,0 +1,10 @@
+#!/bin/bash
+
+echo -n "checking whether readlink -f works ... "
+if readlink -f "$0" &>/dev/null; then
+  echo yes
+  printf "\000READLINK_F_WORKS=1\n"
+else
+  echo no
+  printf "\000READLINK_F_WORKS=0\n"
+fi

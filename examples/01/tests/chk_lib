@@ -1,0 +1,39 @@
+#!/bin/bash
+
+if [[ -z $1 || -z $2  ]]; then
+  echo "USAGE: chk_lib VARNAME LIBNAME [ALTS...]"
+  exit 1
+fi
+
+echo_n() {
+  printf '%s' "$@"
+}
+
+. tent.sh || { echo "tent.sh not found"; exit 1; }
+
+lib_found=false
+var_name="$1"
+libsx=""
+shift
+
+LIBx2="LIBS_$1"
+
+mkdir -p .zscfzFiles
+echo_n "int main(int argc, char **argv) { return 0; }" > ".zscfzFiles/chklib_$$.c"
+
+for lib in "${!LIBx2}" "$@"; do
+  [ -z "$lib" ] && continue
+  echo_n "checking for library $lib ... "
+  libsx="$lib"
+  echo "$lib" | grep -Fq - - || libsx="-l$lib"
+  libsx="$(echo "$libsx" | sed -e 's/;/ /g')"
+  if "$CC" $libsx -o ".zscfzFiles/chklib_$$.x" ".zscfzFiles/chklib_$$.c" &>/dev/null; then
+    echo yes
+    lib_found=true
+    break
+  fi
+  echo no
+done
+
+rm -f ".zscfzFiles/chklib_$$."*
+$lib_found && printf "\000$var_name=$libsx\n"
