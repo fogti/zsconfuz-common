@@ -122,17 +122,24 @@ void cmdqueue_t::remove_empty_sections() {
 auto cmdqueue_t::serialize() const -> string {
   ostringstream ss;
   if(output != ZSCONFUZ_DFL_OUTPUT)
-    ss << "output \"" << output << "\"\n\n";
+    ss << "output " << quoted(output) << "\n\n";
 
   for(const auto &i : cmds) {
-    ss << ": \"" << i.first << "\"\n";
+    ss << ": " << quoted(i.first) << '\n';
     for(const auto &j : i.second) {
-      ss << "\"";
+      vector<string> args;
+      args.emplace_back();
       for(const auto c : j) {
-        if(!c) ss << "\" \"";
-        else   ss << c;
+        if(!c) args.emplace_back();
+        else   args.back() += c;
       }
-      ss << "\"\n";
+      bool fi = true;
+      for(const auto &x : args) {
+        if(fi) fi = false;
+        else   ss << ' ';
+        ss << quoted(x);
+      }
+      ss << '\n';
     }
     ss << '\n';
   }
