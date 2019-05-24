@@ -3,7 +3,7 @@ project(zsconfuz-common)
 
 set(INSTALL_BIN_DIR bin CACHE PATH "Installation directory for binaries")
 set(INSTALL_LIB_DIR "lib${LIB_SUFFIX}" CACHE PATH "Installation directory for libraries")
-set(INSTALL_INCLUDE_DIR include/zsconfuz-common CACHE PATH "Installation directory for header files")
+set(INSTALL_INCLUDE_DIR include/zs/confuz-common CACHE PATH "Installation directory for header files")
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
