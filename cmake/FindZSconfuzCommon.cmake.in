@@ -1,0 +1,29 @@
+# - Try to find @CMAKE_PREFIX@
+# Once done, this will define
+#
+#  @CMAKE_PREFIX@_FOUND - system has @CMAKE_PREFIX@
+#  @CMAKE_PREFIX@_INCLUDE_DIRS - the @CMAKE_PREFIX@ include directories
+#  @CMAKE_PREFIX@_LIBRARIES - link these to use @CMAKE_PREFIX@
+
+include(CMakeFindDependencyMacro)
+find_dependency(ZLIB)
+find_dependency(Threads)
+
+find_path(@CMAKE_PREFIX@_INCLUDE_DIR
+  NAMES zs/confuz-common
+  PATHS @INSTALL_INCLUDE_DIR@
+)
+
+find_library(@CMAKE_PREFIX@_LIBRARY
+  NAMES zsconfuz-common
+  PATHS @INSTALL_LIB_DIR@
+)
+
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(@CMAKE_PREFIX@ DEFAULT_MSG
+                                  @CMAKE_PREFIX@_LIBRARY ZLIB_LIBRARIES CMAKE_THREAD_LIBS_INIT @CMAKE_PREFIX@_INCLUDE_DIR)
+
+mark_as_advanced(@CMAKE_PREFIX@_INCLUDE_DIR @CMAKE_PREFIX@_LIBRARY)
+
+set(@CMAKE_PREFIX@_INCLUDE_DIRS ${@CMAKE_PREFIX@_INCLUDE_DIR})
+set(@CMAKE_PREFIX@_LIBRARIES ${@CMAKE_PREFIX@_LIBRARY} ${ZLIB_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
