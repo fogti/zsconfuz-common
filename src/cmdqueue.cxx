@@ -54,12 +54,11 @@ static const unordered_map<string, function<bool (cmdqueue_t &, vector<string> &
 };
 
 /* read_cmdqueue
- * reads the commands + output file name from the given cmdqueue file
+ * reads the commands + output file name from the given cmdqueue stream
  * NOTE: probably needs more optimization, we spend round 10% runtime here
  */
 [[gnu::hot]]
-auto cmdqueue_t::read_from_file(const char *file) -> cmdqueue_t {
-  ifstream cqin(file);
+auto cmdqueue_t::read_from_stream(istream &cqin, const char *file) -> cmdqueue_t {
   if(!cqin) throw cmdqueue_parse_error("can't open cmdqueue file: " + string(file));
   cmdqueue_t ret;
   ret.output = ZSCONFUZ_DFL_OUTPUT;
@@ -110,6 +109,12 @@ auto cmdqueue_t::read_from_file(const char *file) -> cmdqueue_t {
   }
 
   return ret;
+}
+
+[[gnu::hot]]
+auto cmdqueue_t::read_from_file(const char *file) -> cmdqueue_t {
+  ifstream cqin(file);
+  return read_from_stream(cqin, file);
 }
 
 void cmdqueue_t::remove_empty_sections() {

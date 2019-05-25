@@ -4,6 +4,7 @@
  **/
 #pragma once
 #include <deque>
+#include <istream>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -25,6 +26,7 @@ namespace confuz {
         insec_cmds_queue_t()));
     }
 
+    static auto read_from_stream(std::istream &cqin, const char *file) -> cmdqueue_t;
     static auto read_from_file(const char *file) -> cmdqueue_t;
 
     void remove_empty_sections();
