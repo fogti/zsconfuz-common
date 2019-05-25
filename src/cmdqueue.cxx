@@ -117,6 +117,17 @@ auto cmdqueue_t::read_from_file(const char *file) -> cmdqueue_t {
   return read_from_stream(cqin, file);
 }
 
+[[gnu::hot]]
+auto cmdqueue_t::cmd2argv(const string &cmd) -> deque<string> {
+  deque<string> args;
+  args.emplace_back();
+  for(const auto c : cmd) {
+    if(c) args.back() += c;
+    else  args.emplace_back();
+  }
+  return args;
+}
+
 void cmdqueue_t::remove_empty_sections() {
   const auto ie = cmds.end();
   cmds.erase(std::remove_if(cmds.begin(), ie,
@@ -132,14 +143,8 @@ auto cmdqueue_t::serialize() const -> string {
   for(const auto &i : cmds) {
     ss << ": " << quoted(i.first) << '\n';
     for(const auto &j : i.second) {
-      vector<string> args;
-      args.emplace_back();
-      for(const auto c : j) {
-        if(!c) args.emplace_back();
-        else   args.back() += c;
-      }
       bool fi = true;
-      for(const auto &x : args) {
+      for(const auto &x : cmd2argv(j)) {
         if(fi) fi = false;
         else   ss << ' ';
         ss << quoted(x);
