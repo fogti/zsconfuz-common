@@ -23,9 +23,12 @@ add_library(zsconfuz-common SHARED src/cmdqueue.cxx)
 set_target_properties (zsconfuz-common PROPERTIES VERSION "0.0.0" SOVERSION 0)
 target_compile_options(zsconfuz-common PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-fno-rtti>)
 
+add_executable(zsconfuz-cqsanitize src/cqsanitize.cxx)
+target_link_libraries(zsconfuz-cqsanitize zsconfuz-common)
+
 add_subdirectory(cmake)
 
-install(TARGETS zsconfuz-filter DESTINATION "${INSTALL_BIN_DIR}")
+install(TARGETS zsconfuz-filter zsconfuz-cqsanitize DESTINATION "${INSTALL_BIN_DIR}")
 install(TARGETS zsconfuz-common DESTINATION "${INSTALL_LIB_DIR}" EXPORT "${CMAKE_PREFIX}Targets")
 install(FILES src/cmdqueue.hpp src/dflout.h DESTINATION "${INSTALL_INCLUDE_DIR}/zs/confuz-common")
 
