@@ -5,9 +5,7 @@ if [[ -z $1 || -z $2 ]]; then
   exit 1
 fi
 
-echo_n() {
-  printf '%s' "$@"
-}
+. "$(dirname "$0")/cfut.sh" || { echo "cfut.sh not found"; exit 1; }
 
 prog_found=false
 var_name="$1"
@@ -20,10 +18,10 @@ for prog in ${!var_name} "$@"; do
   if [ -f "$real_path" ]; then
     echo "$real_path"
     prog_found=true
+    zsconfuz-push result "$var_name=$prog"
     break
   fi
   echo no
 done
 
-printf "\000$found_vn=$prog_found\n"
-$prog_found && printf "\000$var_name=$prog\n"
+zsconfuz-push result "$found_vn=$prog_found"

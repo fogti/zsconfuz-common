@@ -5,13 +5,9 @@ if [[ -z $1 || -z $2  ]]; then
   exit 1
 fi
 
-echo_n() {
-  printf '%s' "$@"
-}
-
+. "$(dirname "$0")/cfut.sh" || { echo "cfut.sh not found"; exit 1; }
 . tent.sh || { echo "tent.sh not found"; exit 1; }
 
-lib_found=false
 var_name="$1"
 libsx=""
 shift
@@ -29,11 +25,10 @@ for lib in "${!LIBx2}" "$@"; do
   libsx="$(echo "$libsx" | sed -e 's/;/ /g')"
   if "$CC" $libsx -o ".zscfzFiles/chklib_$$.x" ".zscfzFiles/chklib_$$.c" &>/dev/null; then
     echo yes
-    lib_found=true
+    zsconfuz-push result "$var_name=$libsx"
     break
   fi
   echo no
 done
 
 rm -f ".zscfzFiles/chklib_$$."*
-$lib_found && printf "\000$var_name=$libsx\n"

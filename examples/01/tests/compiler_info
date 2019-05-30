@@ -1,5 +1,6 @@
 #!/bin/bash
 
+. "$(dirname "$0")/cfut.sh" || { echo "cfut.sh not found"; exit 1; }
 . tent.sh || { echo "tent.sh not found"; exit 1; }
 
 printf "checking for $1 compiler version ... "
@@ -8,7 +9,7 @@ for i in --version -v -V -qversion; do
   temp="$("${!2}" "$i" 2>/dev/null | head -n 1)"
   if [ -n "$temp" ]; then
     echo "$temp"
-    printf "\000compiler_${2}_vers=\"$temp\"\n"
+    zsconfuz-push result "compiler_${2}_vers=\"$temp\""
     is_dn=true
     break
   fi
@@ -23,13 +24,5 @@ int main() {}
 EOF
 
 "${!2}" -o ".zscfzFiles/compiler_ctst_$1.x" "$tmpf" &>/dev/null
-if [ $? -eq 0 ]; then
-  echo "yes"
-  printf "\000compiler_${2}_works=1\n"
-else
-  echo "no"
-  printf "\000compiler_${2}_works=0\n"
-fi
-
-rm -f ".zscfzFiles/compiler_ctst_$1."*
-exit 0
+print_result "compiler_${2}_works"
+rm -f ".zscfzFiles/compiler_ctst_$1."* || true
