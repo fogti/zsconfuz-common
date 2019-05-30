@@ -10,19 +10,19 @@
 namespace zs {
 namespace confuz {
   template<class T>
-  static inline ssize_t write_obj(const int fd, const T &obj, const size_t offset = 0)
+  static inline ssize_t write_obj(const int fd, const T &obj, const size_t offset = 0) noexcept
     { return write(fd, obj.data() + offset, obj.size() - offset); }
 
-  static inline ssize_t write_obj(const int fd, const char x)
+  static inline ssize_t write_obj(const int fd, const char x) noexcept
     { return write(fd, &x, 1); }
 
-  ssize_t write_obj(const int fd, const char *x);
+  ssize_t write_obj(const int fd, const char *x) noexcept;
 
-  static inline ssize_t write_objs(const int fd)
+  static inline ssize_t write_objs(const int fd) noexcept
     { return 0; }
 
   template<class T, class... Types>
-  static inline ssize_t write_objs(const int fd, const T &val, const Types&... args) {
+  static inline ssize_t write_objs(const int fd, const T &val, const Types&... args) noexcept {
     ssize_t ret;
     do { ret = write_obj(fd, val); }
       while(ret == -1 && errno == EINTR);

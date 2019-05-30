@@ -9,7 +9,7 @@
 namespace zs {
 namespace confuz {
 
-ssize_t write_obj(const int fd, const char *x)
+ssize_t write_obj(const int fd, const char *x) noexcept
   { return write(fd, x, strlen(x)); }
 
 }
