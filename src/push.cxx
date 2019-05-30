@@ -57,10 +57,12 @@ static int cq_push_section(const char **section) {
 }
 
 static int cq_push_command(const char **argv) {
-  write_objs(1, '\002');
-  write_objs(1, *argv);
-  for(++argv; *argv; ++argv) write_objs(1, '\0', *argv);
-  write_objs(1, '\n');
+  using zs::confuz::buffer_objs;
+  string buffer;
+  buffer_objs(buffer, '\002', *argv);
+  for(++argv; *argv; ++argv) buffer_objs(buffer, '\0', *argv);
+  buffer_objs(buffer, '\n');
+  write_objs(1, buffer);
   return 0;
 }
 

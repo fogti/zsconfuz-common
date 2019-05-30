@@ -1,2 +1,2 @@
 : ""
-echo -e "\\001echo hi"
+zsconfuz-push command echo hi

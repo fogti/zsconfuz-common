@@ -1,0 +1,6 @@
+example1:
+  ZSconfuzel.txt
+
+example2: demonstrate push of commands at runtime using zsconfuz-push
+  tat.txt
+  out: tatx.sh

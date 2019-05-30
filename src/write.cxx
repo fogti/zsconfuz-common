@@ -9,8 +9,9 @@
 namespace zs {
 namespace confuz {
 
-ssize_t write_obj(const int fd, const char *x) noexcept
-  { return write(fd, x, strlen(x)); }
+[[gnu::hot]]
+intern::iovec intern::obj2iovec(const char *x) noexcept
+  { return { const_cast<void*>(static_cast<const void*>(x)), strlen(x) }; }
 
 }
 }
