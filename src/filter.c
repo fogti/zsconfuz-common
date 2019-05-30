@@ -1,5 +1,5 @@
-/** zsconfuz filter.c
-    (C) 2018 Erik Zscheile
+/** zsconfuz-common filter.c
+    (C) 2019 Erik Zscheile
     License: ISC
 
  * USAGE: CMD ARGS... | zsconfuz-filter
@@ -36,8 +36,9 @@ int main() {
       } else {
         got_nl = false;
         switch(*pos) {
-          case '\0':   // redirect output to shell results file
-          case '\001': // runtime command push
+          case '\000': // redirect output to shell results file
+          case '\001': // runtime section push
+          case '\002': // runtime command push
             filtch = true;
         }
       }

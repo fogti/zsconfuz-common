@@ -1,0 +1,8 @@
+output tatx.sh
+
+: ""
+/usr/bin/zsconfuz-push command echo OK
+/usr/bin/zsconfuz-push result DNE=1
+/usr/bin/sleep 0.1
+/usr/bin/zsconfuz-push command echo Fertig
+/usr/bin/zsconfuz-push file ZSconfuzel.txt

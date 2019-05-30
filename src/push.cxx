@@ -21,6 +21,12 @@
 using std::string;
 using zs::confuz::write_objs;
 
+static void write_errmsg(const char *em)
+  { write_objs(2, "zsconfuz-push: ERROR: ", em, '\n'); }
+
+static void write_errmsg(const string &em)
+  { write_errmsg(em.c_str()); }
+
 static int cq_push_file(const char **file) {
   try {
     auto config = zs::confuz::cmdqueue_t::read_from_file(*file);
@@ -40,7 +46,7 @@ static int cq_push_file(const char **file) {
     }
     return 0;
   } catch(const zs::confuz::cmdqueue_parse_error &e) {
-    write_objs(2, "zsconfuz-push: ERROR: ", e.what(), '\n');
+    write_errmsg(e.what());
     return 2;
   }
 }
@@ -58,10 +64,17 @@ static int cq_push_command(const char **argv) {
   return 0;
 }
 
+static int cq_push_result(const char **result) {
+  write_objs(1, '\000', *result, '\n');
+  return 0;
+}
+
 static std::unordered_map<string, std::function<int (const char **argv)>> cqpfns = {
-  { "file", cq_push_file },
+  { "cqfile" , cq_push_file    },
+  { "file"   , cq_push_file    },
   { "section", cq_push_section },
   { "command", cq_push_command },
+  { "result" , cq_push_result  },
 };
 
 int main(int argc, const char *argv[]) {
@@ -69,6 +82,7 @@ int main(int argc, const char *argv[]) {
     puts("USAGE: zsconfuz-push file CQ_FILE\n"
          "       zsconfuz-push section SECTION_NAME\n"
          "       zsconfuz-push command CMD ARGS...\n"
+         "       zsconfuz-push result RESULT\n"
          "\nReturn codes:\n"
          "  0 successful\n"
          "  1 usage error\n"
@@ -80,7 +94,7 @@ int main(int argc, const char *argv[]) {
 
   const auto fnit = cqpfns.find(argv[1]);
   if(fnit == cqpfns.end()) {
-    write_objs(2, "zsconfuz-push: ERROR: subcommand not found\n");
+    write_errmsg("subcommand not found");
     return 1;
   }
 
