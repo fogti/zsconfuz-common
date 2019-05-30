@@ -182,7 +182,9 @@ auto cmdqueue_t::serialize() const -> string {
     ss << '\n';
   }
 
-  return ss.str();
+  auto ret = ss.str();
+  if(!ret.empty()) ret.pop_back(); // strip last newline of double-newline
+  return ret;
 }
 
 bool cmdqueue_t::write_to_file(const char *file) const noexcept {
