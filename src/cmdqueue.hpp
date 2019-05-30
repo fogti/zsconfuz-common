@@ -29,6 +29,7 @@ namespace confuz {
     static auto read_from_stream(std::istream &cqin, const char *file) -> cmdqueue_t;
     static auto read_from_file(const char *file) -> cmdqueue_t;
     static auto cmd2argv(const std::string &cmd) -> std::deque<std::string>;
+    static auto arg2quoted(const std::string &arg) -> std::string;
 
     void remove_empty_sections();
     bool valid() const noexcept { return !(output.empty() && cmds.empty()); }

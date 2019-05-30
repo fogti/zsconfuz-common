@@ -128,6 +128,34 @@ auto cmdqueue_t::cmd2argv(const string &cmd) -> deque<string> {
   return args;
 }
 
+// prevent unnecessary quoting
+auto cmdqueue_t::arg2quoted(const string &x) -> string {
+  const string qxss = ([&x]() {
+    ostringstream ss;
+    ss << quoted(x);
+    return ss.str();
+  })();
+
+  const bool isnec =
+      x.empty()
+   || (qxss != ("\"" + x + "\""))
+   || ([&x]() {
+        for(const char c : x) {
+          switch(c) {
+            case '\n': case '\v':
+            case '\t': case '\f':
+            case '\r': case ' ' :
+            case '"' : case '#' :
+            case ';' : case '\\':
+              return true;
+          }
+        }
+        return false;
+      })();
+
+  return isnec ? qxss : x;
+}
+
 void cmdqueue_t::remove_empty_sections() {
   const auto ie = cmds.end();
   cmds.erase(std::remove_if(cmds.begin(), ie,
@@ -138,16 +166,16 @@ void cmdqueue_t::remove_empty_sections() {
 auto cmdqueue_t::serialize() const -> string {
   ostringstream ss;
   if(output != ZSCONFUZ_DFL_OUTPUT)
-    ss << "output " << quoted(output) << "\n\n";
+    ss << "output " << arg2quoted(output) << "\n\n";
 
   for(const auto &i : cmds) {
-    ss << ": " << quoted(i.first) << '\n';
+    ss << ": " << arg2quoted(i.first) << '\n';
     for(const auto &j : i.second) {
       bool fi = true;
       for(const auto &x : cmd2argv(j)) {
         if(fi) fi = false;
         else   ss << ' ';
-        ss << quoted(x);
+        ss << arg2quoted(x);
       }
       ss << '\n';
     }
