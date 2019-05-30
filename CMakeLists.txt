@@ -17,19 +17,5 @@ include_directories("${PROJECT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-plt -fno-exceptions -fno-unwind-tables -fno-asynchronous-unwind-tables")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-plt")
 
-add_executable(zsconfuz-filter src/filter.c)
-
-add_library(zsconfuz-common SHARED src/cmdqueue.cxx)
-set_target_properties (zsconfuz-common PROPERTIES VERSION "0.0.0" SOVERSION 0)
-target_compile_options(zsconfuz-common PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-fno-rtti>)
-
-add_executable(zsconfuz-cqsanitize src/cqsanitize.cxx)
-target_link_libraries(zsconfuz-cqsanitize zsconfuz-common)
-
 add_subdirectory(cmake)
-
-install(TARGETS zsconfuz-filter zsconfuz-cqsanitize DESTINATION "${INSTALL_BIN_DIR}")
-install(TARGETS zsconfuz-common DESTINATION "${INSTALL_LIB_DIR}" EXPORT "${CMAKE_PREFIX}Targets")
-install(FILES src/cmdqueue.hpp src/dflout.h DESTINATION "${INSTALL_INCLUDE_DIR}/zs/confuz-common")
-
-install(EXPORT "${CMAKE_PREFIX}Targets" DESTINATION "${INSTALL_CMAKE_DIR}" NAMESPACE "${CMAKE_PREFIX}::" COMPONENT dev)
+add_subdirectory(src)
