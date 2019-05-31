@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
   // handle inputs
   try {
     for(; argc > 0; next_arg())
-      cq.append_and_merge(zs::confuz::cmdqueue_t::read_from_file(argv[0]));
+      cq.append_and_merge(zs::confuz::cmdqueue_t::read_from_file(argv[0], false));
   } catch(const zs::confuz::cmdqueue_parse_error &e) {
     std::cerr << "zsconfuz-cqsanitize: ERROR: " << e.what() << '\n';
     return 1;

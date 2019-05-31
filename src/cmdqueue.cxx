@@ -40,7 +40,7 @@ static const unordered_map<string, function<bool (cmdqueue_t &, vector<string> &
   { "include", [](cmdqueue_t &cdat, vector<string> &args) {
     if(args.size() != 1)
       return false;
-    cdat.append_and_merge(cmdqueue_t::read_from_file(args.front().c_str()));
+    cdat.append_and_merge(cmdqueue_t::read_from_file(args.front().c_str(), true));
     return true;
   }},
 };
@@ -55,7 +55,7 @@ void cmdqueue_t::append_and_merge(cmdqueue_t &&tm) {
  * NOTE: probably needs more optimization, we spend round 10% runtime here
  */
 [[gnu::hot]]
-auto cmdqueue_t::read_from_stream(istream &cqin, const char *file) -> cmdqueue_t {
+auto cmdqueue_t::read_from_stream(istream &cqin, const char *file, const bool is_strict) -> cmdqueue_t {
   if(!cqin) throw cmdqueue_parse_error("can't open cmdqueue file: " + string(file));
   cmdqueue_t ret;
   ret.output = ZSCONFUZ_DFL_OUTPUT;
@@ -93,10 +93,21 @@ auto cmdqueue_t::read_from_stream(istream &cqin, const char *file) -> cmdqueue_t
 
     if(ret.cmds.empty()) {
       const auto it = read_cq_jt.find(fi);
-      if(it == read_cq_jt.end())
-        readcq_errmsg(file, lnum, fi, ": unknown command");
-      if(!it->second(ret, tmpv))
+      if(it == read_cq_jt.end()) {
+        if(is_strict) {
+          readcq_errmsg(file, lnum, fi, ": unknown command");
+        } else {
+          ret.new_section(string());
+          string &ccmd = ret.cmds.back().second.emplace_back();
+          ccmd += fi;
+          buffer_objvm(ccmd,
+            [](const string &i) -> size_t { return 1 + i.size(); },
+            [](string &b, const string &i) { (b += '\0') += i; },
+            tmpv);
+        }
+      } else if(!it->second(ret, tmpv)) {
         readcq_errmsg(file, lnum, fi, ": got invalid arguments");
+      }
     } else {
       string &ccmd = ret.cmds.back().second.emplace_back();
       ccmd += fi;
@@ -111,9 +122,9 @@ auto cmdqueue_t::read_from_stream(istream &cqin, const char *file) -> cmdqueue_t
 }
 
 [[gnu::hot]]
-auto cmdqueue_t::read_from_file(const char *file) -> cmdqueue_t {
+auto cmdqueue_t::read_from_file(const char *file, const bool is_strict) -> cmdqueue_t {
   ifstream cqin(file);
-  return read_from_stream(cqin, file);
+  return read_from_stream(cqin, file, is_strict);
 }
 
 [[gnu::hot]]

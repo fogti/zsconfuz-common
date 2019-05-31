@@ -26,8 +26,14 @@ namespace confuz {
         insec_cmds_queue_t()));
     }
 
-    static auto read_from_stream(std::istream &cqin, const char *file) -> cmdqueue_t;
-    static auto read_from_file(const char *file) -> cmdqueue_t;
+    /* is_strict
+       ? (invalid preamble command are an error)
+       : (invalid preamble commands introduce a new section + put there)
+     */
+    static auto read_from_stream(std::istream &cqin, const char *file, bool is_strict = true)
+      -> cmdqueue_t;
+    static auto read_from_file(const char *file, bool is_strict = true)
+      -> cmdqueue_t;
     static auto cmd2argv(const std::string &cmd) -> std::deque<std::string>;
     static auto arg2quoted(const std::string &arg) -> std::string;
 
