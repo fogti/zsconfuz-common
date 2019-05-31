@@ -23,11 +23,6 @@ using namespace std;
 namespace zs {
 namespace confuz {
 
-static void merge_cmdqueue(cmdqueue_t &ret, cmdqueue_t &&tm) {
-  if(!tm.output.empty()) ret.output = move(tm.output);
-  ret.cmds.insert(ret.cmds.end(), move_iterator(tm.cmds.begin()), move_iterator(tm.cmds.end()));
-}
-
 [[gnu::cold]]
 static void readcq_errmsg(const char * file, const size_t lnum, const string msg1, const string &msg2 = {}) {
   string em;
@@ -45,10 +40,15 @@ static const unordered_map<string, function<bool (cmdqueue_t &, vector<string> &
   { "include", [](cmdqueue_t &cdat, vector<string> &args) {
     if(args.size() != 1)
       return false;
-    merge_cmdqueue(cdat, cmdqueue_t::read_from_file(args.front().c_str()));
+    cdat.append_and_merge(cmdqueue_t::read_from_file(args.front().c_str()));
     return true;
   }},
 };
+
+void cmdqueue_t::append_and_merge(cmdqueue_t &&tm) {
+  if(!tm.output.empty()) output = move(tm.output);
+  cmds.insert(cmds.end(), move_iterator(tm.cmds.begin()), move_iterator(tm.cmds.end()));
+}
 
 /* read_cmdqueue
  * reads the commands + output file name from the given cmdqueue stream

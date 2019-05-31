@@ -32,6 +32,7 @@ namespace confuz {
     static auto arg2quoted(const std::string &arg) -> std::string;
 
     void remove_empty_sections();
+    void append_and_merge(cmdqueue_t &&tm);
     bool valid() const noexcept { return !(output.empty() && cmds.empty()); }
     auto serialize() const -> std::string;
     bool write_to_file(const char *file) const noexcept;
