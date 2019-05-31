@@ -83,7 +83,7 @@ namespace confuz {
   }
 
   template<class T>
-  static inline void buffer_objvm(
+  static inline void buffer_objvm_(
       std::string &buf,
       const std::function<size_t (const T &)> &grsf,
       const std::function<void (std::string &, const T &)> &trf,
@@ -106,7 +106,7 @@ namespace confuz {
       FnT &&trf,
       const std::vector<T>& args
   ) {
-    return buffer_objvm<T>(buf,
+    return buffer_objvm_<T>(buf,
       std::function<size_t (const T &)>(grsf),
       std::function<void (std::string &, const T &)>(trf),
       args);
@@ -114,7 +114,7 @@ namespace confuz {
 
   template<class... Types>
   static inline void buffer_objs(std::string &buf, const Types&... args) {
-    buffer_objvm<intern::sv>(buf,
+    buffer_objvm_<intern::sv>(buf,
       [](const intern::sv &x)                 { return x.size(); },
       [](std::string &b, const intern::sv &x) { b.append(x.data(), x.size()); },
       intern::objs2sv2(args...));
