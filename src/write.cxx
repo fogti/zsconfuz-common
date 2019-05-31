@@ -10,8 +10,8 @@ namespace zs {
 namespace confuz {
 
 [[gnu::hot]]
-intern::iovec intern::obj2iovec(const char *x) noexcept
-  { return { const_cast<void*>(static_cast<const void*>(x)), strlen(x) }; }
+intern::sv intern::obj2sv(const char *x) noexcept
+  { return { x, strlen(x) }; }
 
 }
 }

@@ -4,12 +4,14 @@
  **/
 #include "dflout.h"
 #include "cmdqueue.hpp"
+#include "write.hpp"
 #include <string.h>          // strlen
 
 #include <algorithm>
 #include <fstream>
 #include <functional>
 #include <iostream>
+#include <string_view>
 #include <sstream>
 #include <iterator>
 #include <iomanip>           // quoted
@@ -28,13 +30,8 @@ static void merge_cmdqueue(cmdqueue_t &ret, cmdqueue_t &&tm) {
 
 [[gnu::cold]]
 static void readcq_errmsg(const char * file, const size_t lnum, const string msg1, const string &msg2 = {}) {
-  const size_t filelen = strlen(file);
   string em;
-  em.reserve(23 + filelen + msg1.size() + msg2.size());
-  (em += "cmdqueue file ").append(file, filelen);
-  (em += ": line ") += to_string(lnum);
-  (em += ": ") += msg1;
-  em += msg2;
+  buffer_objs(em, "cmdqueue file ", string_view(file, strlen(file)), ": line ", to_string(lnum), ": ", msg1, msg2);
   throw cmdqueue_parse_error(move(em));
 }
 
@@ -102,9 +99,11 @@ auto cmdqueue_t::read_from_stream(istream &cqin, const char *file) -> cmdqueue_t
         readcq_errmsg(file, lnum, fi, ": got invalid arguments");
     } else {
       string &ccmd = ret.cmds.back().second.emplace_back();
-      ccmd.reserve(1 + fi.size() + 3 * tmpv.size());
-      ccmd += move(fi);
-      for(auto &&i : tmpv) (ccmd += '\0') += move(i);
+      ccmd += fi;
+      buffer_objvm(ccmd,
+        [](const string &i) -> size_t { return 1 + i.size(); },
+        [](string &b, const string &i) { (b += '\0') += i; },
+        tmpv);
     }
   }
 
@@ -164,25 +163,24 @@ void cmdqueue_t::remove_empty_sections() {
 }
 
 auto cmdqueue_t::serialize() const -> string {
-  ostringstream ss;
+  string ret;
   if(output != ZSCONFUZ_DFL_OUTPUT)
-    ss << "output " << arg2quoted(output) << "\n\n";
+    buffer_objs(ret, "output ", arg2quoted(output), "\n\n");
 
   for(const auto &i : cmds) {
-    ss << ": " << arg2quoted(i.first) << '\n';
+    buffer_objs(ret, ": ", arg2quoted(i.first), '\n');
     for(const auto &j : i.second) {
       bool fi = true;
       for(const auto &x : cmd2argv(j)) {
         if(fi) fi = false;
-        else   ss << ' ';
-        ss << arg2quoted(x);
+        else   ret += ' ';
+        buffer_objs(ret, arg2quoted(x));
       }
-      ss << '\n';
+      ret += '\n';
     }
-    ss << '\n';
+    ret += '\n';
   }
 
-  auto ret = ss.str();
   if(!ret.empty()) ret.pop_back(); // strip last newline of double-newline
   return ret;
 }
