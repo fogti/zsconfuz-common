@@ -1,2 +1,9 @@
 : ""
-zsconfuz-push command echo hi
+zsconfuz-push command zsconfuz-push command zsconfuz-push command zsconfuz-push command echo hi
+zsconfuz-push command zsconfuz-push command zsconfuz-push command zsconfuz-push command echo hi
+zsconfuz-push command zsconfuz-push command zsconfuz-push command zsconfuz-push command echo hi
+zsconfuz-push command zsconfuz-push command zsconfuz-push command zsconfuz-push command echo hi
+zsconfuz-push command zsconfuz-push command zsconfuz-push command zsconfuz-push command echo hi
+zsconfuz-push command zsconfuz-push command zsconfuz-push command zsconfuz-push command echo hi
+zsconfuz-push command zsconfuz-push command zsconfuz-push command zsconfuz-push command echo hi
+zsconfuz-push command zsconfuz-push command zsconfuz-push command zsconfuz-push command echo hi
